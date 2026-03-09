@@ -1,52 +1,52 @@
+
 # CMS PORTAL - Mini Project
 
-A clean, modular **Company Management System** portal built as a GitHub-ready mini project.
+A clean, modular **Company Management System** portal built as a mini project for the purpose of learning and understanding the working of a web application.
 
-## 📁 Project Structure
+📁 Project Structure
 
-```
 CMS PORTAL - Mini Project/
 │
-├── frontend/                   # Static HTML/CSS/JS front-end
-│   ├── index.html              # Dashboard
-│   ├── employees.html          # Employee & Payroll
-│   ├── attendance.html         # Attendance & Leave
-│   ├── tasks.html              # Kanban Task Board
-│   ├── analytics.html          # Analytics & Reports
+├── frontend/                 
+│   ├── index.html              
+│   ├── employees.html          
+│   ├── attendance.html         
+│   ├── tasks.html              
+│   ├── analytics.html         
 │   │
 │   ├── css/
-│   │   └── styles.css          # Global extracted styles
+│   │   └── styles.css         
 │   │
 │   └── js/
-│       ├── api.js              # Centralised fetch API client
-│       ├── auth.js             # Sidebar toggle + session utils
-│       ├── employees.js        # Employee table, filter, pagination
-│       ├── attendance.js       # Leave requests, approve/reject
-│       ├── tasks.js            # Kanban board + drag-and-drop
-│       └── analytics.js        # Report generator, chart stubs
+│       ├── api.js              
+│       ├── auth.js            
+│       ├── employees.js       
+│       ├── attendance.js       
+│       ├── tasks.js           
+│       └── analytics.js        
 │
-├── backend/                    # Node.js + Express REST API
-│   ├── server.js               # Entry point
-│   ├── routes/                 # Route definitions
+├── backend/                    
+│   ├── server.js               
+│   ├── routes/                 
 │   │   ├── auth.js
 │   │   ├── employees.js
 │   │   ├── attendance.js
 │   │   ├── tasks.js
 │   │   └── analytics.js
-│   ├── controllers/            # Business logic
+│   ├── controllers/            
 │   │   ├── authController.js
 │   │   ├── employeesController.js
 │   │   ├── attendanceController.js
 │   │   ├── tasksController.js
 │   │   └── analyticsController.js
 │   ├── middleware/
-│   │   ├── auth.js             # JWT protect middleware
-│   │   └── errorHandler.js     # 404 + global error handler
+│   │   ├── auth.js             
+│   │   └── errorHandler.js   
 │   └── db/
-│       └── connection.js       # MySQL2 connection pool
+│       └── connection.js       
 │
 ├── database/
-│   └── schema.sql              # Full MySQL schema + seed data
+│   └── schema.sql             
 │
 ├── package.json
 └── README.md
@@ -54,39 +54,38 @@ CMS PORTAL - Mini Project/
 
 ---
 
-## 🚀 Quick Start
+🚀 Quick Start
 
-### 1. Open the Frontend (No Server Needed)
+1. Open the Frontend (No Server Needed)
 Simply open `frontend/index.html` in your browser. All 5 pages are fully functional as a static UI.
 
-### 2. Run the Backend API
+2. Run the Backend API
 
 **Prerequisites:** Node.js ≥ 18, MySQL 8+
 
-```bash
-# Install dependencies
+>>bash
+Install dependencies
 npm install
 
-# Set up the database
+>>Set up the database
 mysql -u root -p < database/schema.sql
 
-# Configure environment (copy and edit)
+>>Configure environment (copy and edit)
 cp .env.example .env
 
-# Start dev server with hot-reload
+>>Start dev server with hot-reload
 npm run dev
 
-# Or production
+>>Or production
 npm start
-```
 
 The API runs at `http://localhost:3000`.
 
-### 3. Environment Variables
+3. Environment Variables
 
 Create a `.env` file in the project root:
 
-```env
+>>env
 PORT=3000
 JWT_SECRET=your_super_secret_key_here
 JWT_EXPIRES=8h
@@ -96,11 +95,9 @@ DB_USER=root
 DB_PASSWORD=your_mysql_password
 DB_NAME=cms_portal
 CORS_ORIGIN=http://127.0.0.1:5500
-```
 
----
 
-## 🌐 API Endpoints
+🌐 API Endpoints
 
 | Method | Route | Description |
 |--------|-------|-------------|
@@ -122,9 +119,7 @@ CORS_ORIGIN=http://127.0.0.1:5500
 | GET | `/api/analytics/financial` | Revenue vs Costs data |
 | POST | `/api/analytics/report` | Generate report |
 
----
-
-## 🛠️ Tech Stack
+🛠️ Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -136,8 +131,5 @@ CORS_ORIGIN=http://127.0.0.1:5500
 | Database | MySQL 8 (mysql2 driver) |
 | Dev Server | Nodemon |
 
----
-
-## 📄 License
-
+📄 License
 MIT © CMS PORTAL - Mini Project Project
