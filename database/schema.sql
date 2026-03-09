@@ -1,129 +1,95 @@
--- =============================================================================
 -- CMS PORTAL - Mini Project — MySQL Database Schema
--- database/schema.sql
--- Run: mysql -u root -p < database/schema.sql
--- =============================================================================
 
-CREATE DATABASE IF NOT EXISTS cms_portal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- Create and configure database
+CREATE DATABASE IF NOT EXISTS cms_portal;
 USE cms_portal;
 
--- -----------------------------------------------------------------------------
--- Users (admin accounts)
--- -----------------------------------------------------------------------------
+-- --------------------------------------------------------
+-- Table Structure for `users`
+-- --------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
-    id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name          VARCHAR(100)  NOT NULL,
-    username      VARCHAR(50)   NOT NULL UNIQUE,
-    password_hash VARCHAR(255)  NOT NULL,
-    role          ENUM('System Admin','Manager','Viewer') DEFAULT 'Viewer',
-    created_at    TIMESTAMP     DEFAULT CURRENT_TIMESTAMP
+  user_id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role ENUM('admin', 'hr', 'manager', 'employee') DEFAULT 'employee'
 );
 
--- Seed default admin: password = "admin123"
-INSERT IGNORE INTO users (name, username, password_hash, role) VALUES
-('Bala', 'bala', '$2b$10$exampleHashHereReplaceWithRealBcryptHash', 'System Admin');
-
--- -----------------------------------------------------------------------------
--- Employees
--- -----------------------------------------------------------------------------
+-- --------------------------------------------------------
+-- Table Structure for `employees`
+-- --------------------------------------------------------
 CREATE TABLE IF NOT EXISTS employees (
-    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    employee_id     VARCHAR(20)   NOT NULL UNIQUE,
-    name            VARCHAR(100)  NOT NULL,
-    department      ENUM('Engineering','Design','Marketing','DevOps','HR','Operations') NOT NULL,
-    status          ENUM('Active','On Leave','Inactive') DEFAULT 'Active',
-    salary          DECIMAL(10,2) NOT NULL,
-    payroll_status  ENUM('Paid','Processing','Pending') DEFAULT 'Pending',
-    avatar_url      TEXT,
-    created_at      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  employee_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  department VARCHAR(100) NOT NULL,
+  salary DECIMAL(10, 2) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  phone VARCHAR(20) NOT NULL,
+  status ENUM('active', 'inactive', 'on_leave') DEFAULT 'active'
 );
 
--- Seed sample employees
-INSERT IGNORE INTO employees (employee_id, name, department, status, salary, payroll_status) VALUES
-('CMS-1024', 'Prem',      'Engineering', 'Active',   8400.00, 'Paid'),
-('CMS-1102', 'Ezhil',     'Design',      'Active',   7200.00, 'Processing'),
-('CMS-1056', 'Keerthana', 'Engineering', 'On Leave', 9100.00, 'Pending');
-
--- -----------------------------------------------------------------------------
--- Attendance
--- -----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS attendance (
-    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    employee_id INT UNSIGNED NOT NULL,
-    date        DATE         NOT NULL,
-    status      ENUM('Present','Absent','Late','WFH') DEFAULT 'Present',
-    check_in    TIME,
-    check_out   TIME,
-    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
-    UNIQUE KEY uq_emp_date (employee_id, date)
-);
-
--- -----------------------------------------------------------------------------
--- Leave Requests
--- -----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS leave_requests (
-    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    employee_id INT UNSIGNED NOT NULL,
-    leave_type  ENUM('Sick Leave','Vacation','Personal','Maternity','Paternity') NOT NULL,
-    start_date  DATE NOT NULL,
-    end_date    DATE NOT NULL,
-    duration    INT  NOT NULL COMMENT 'Number of days',
-    status      ENUM('Pending','Approved','Rejected') DEFAULT 'Pending',
-    requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
-);
-
--- -----------------------------------------------------------------------------
--- Tasks (Kanban)
--- -----------------------------------------------------------------------------
+-- --------------------------------------------------------
+-- Table Structure for `tasks`
+-- --------------------------------------------------------
 CREATE TABLE IF NOT EXISTS tasks (
-    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    title       VARCHAR(255) NOT NULL,
-    category    VARCHAR(50),
-    priority    ENUM('Low','Medium','High','Urgent') DEFAULT 'Medium',
-    status      ENUM('todo','in-progress','review','completed') DEFAULT 'todo',
-    progress    TINYINT UNSIGNED DEFAULT 0 COMMENT '0-100 percent',
-    due_date    DATE,
-    assigned_to INT UNSIGNED,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (assigned_to) REFERENCES employees(id) ON DELETE SET NULL
+  task_id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  status ENUM('todo', 'in_progress', 'review', 'done') DEFAULT 'todo',
+  priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
+  assigned_to INT,
+  deadline DATE,
+  FOREIGN KEY (assigned_to) REFERENCES employees(employee_id) ON DELETE SET NULL
 );
 
--- Seed sample tasks
-INSERT IGNORE INTO tasks (id, title, category, priority, status, progress) VALUES
-(1, 'Competitor Analysis for Q3 Product Update', 'Research',    'Medium', 'todo',        0),
-(2, 'Update Brand Guidelines',                   'Design',      'Low',    'todo',        0),
-(3, 'Fix Payload Bottleneck in Operations Module','Development', 'Urgent', 'in-progress', 45),
-(4, 'Database Migration (AWS Region Shift)',      'DevOps',      'High',   'review',      90),
-(5, 'Finalize Vendor Agreements',                 'Marketing',   'Medium', 'completed',   100);
-
--- -----------------------------------------------------------------------------
--- Analytics — Financial Overview
--- -----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS financial_overview (
-    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    month       VARCHAR(10) NOT NULL,
-    month_order TINYINT     NOT NULL,
-    revenue     DECIMAL(12,2) NOT NULL,
-    costs       DECIMAL(12,2) NOT NULL
+-- --------------------------------------------------------
+-- Table Structure for `attendance`
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS attendance (
+  attendance_id INT AUTO_INCREMENT PRIMARY KEY,
+  employee_id INT NOT NULL,
+  date DATE NOT NULL,
+  status ENUM('Present', 'Leave', 'Late', 'WFH') DEFAULT 'Present',
+  FOREIGN KEY (employee_id) REFERENCES employees(employee_id) ON DELETE CASCADE,
+  UNIQUE KEY unique_attendance (employee_id, date)
 );
 
-INSERT IGNORE INTO financial_overview (month, month_order, revenue, costs) VALUES
-('Jan', 1, 40000, 20000),
-('Feb', 2, 50000, 25000),
-('Mar', 3, 60000, 18000),
-('Apr', 4, 55000, 30000),
-('May', 5, 75000, 20000);
+-- --------------------------------------------------------
+-- Insert Sample Records
+-- --------------------------------------------------------
 
--- -----------------------------------------------------------------------------
--- Analytics — Expenditure Breakdown
--- -----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS expenditure_breakdown (
-    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    department  VARCHAR(50) NOT NULL,
-    percentage  TINYINT     NOT NULL
-);
+-- Insert sample employees
+INSERT INTO employees (name, department, salary, email, phone, status) VALUES
+('Ravi Kumar', 'Engineering', 85000.00, 'ravi.kumar@example.com', '+91 9876543210', 'active'),
+('Priya Sharma', 'Human Resources', 60000.00, 'priya.sharma@example.com', '+91 9876543211', 'active'),
+('Arun Patel', 'Marketing', 55000.00, 'arun.patel@example.com', '+91 9876543212', 'active'),
+('Sneha Desai', 'Engineering', 90000.00, 'sneha.desai@example.com', '+91 9876543213', 'active'),
+('Vikram Singh', 'Sales', 65000.00, 'vikram.singh@example.com', '+91 9876543214', 'on_leave');
 
-INSERT IGNORE INTO expenditure_breakdown (department, percentage) VALUES
-('Engineering', 42), ('Marketing', 28), ('Operations', 18), ('Others', 12);
+-- Insert sample users (Passwords would typically be hashed, using plain text representation for demonstration)
+-- In a real application, you should use bcrypt to insert hashed passwords
+INSERT INTO users (username, password, role) VALUES
+('admin', '$2a$10$wTf7h3FpwZ9VzW0f2rQzUeUXYx9XzXbA8e3rJpYF9lT2Q1e4a1YmG', 'admin'), -- Password: password123
+('hr_priya', '$2a$10$wTf7h3FpwZ9VzW0f2rQzUeUXYx9XzXbA8e3rJpYF9lT2Q1e4a1YmG', 'hr'),
+('manager_ravi', '$2a$10$wTf7h3FpwZ9VzW0f2rQzUeUXYx9XzXbA8e3rJpYF9lT2Q1e4a1YmG', 'manager'),
+('emp_arun', '$2a$10$wTf7h3FpwZ9VzW0f2rQzUeUXYx9XzXbA8e3rJpYF9lT2Q1e4a1YmG', 'employee');
+
+-- Insert sample tasks
+INSERT INTO tasks (title, description, status, priority, assigned_to, deadline) VALUES
+('Update API endpoints', 'Migrate all backend endpoints to v2 architecture', 'in_progress', 'high', 1, '2026-03-15'),
+('Quarterly HR Report', 'Compile the Q1 hiring and turnover statistics for management review', 'todo', 'medium', 2, '2026-03-20'),
+('Launch ad campaign', 'Start the Facebook and Google ads for the summer product lineup', 'review', 'high', 3, '2026-03-10'),
+('Fix login bug', 'Resolve issue #442 where users cannot reset passwords', 'done', 'high', 4, '2026-03-05'),
+('Client sales pitch', 'Prepare presentation for the upcoming meeting with XYZ Corp', 'todo', 'medium', 5, '2026-03-18');
+
+-- Insert sample attendance
+INSERT INTO attendance (employee_id, date, status) VALUES
+(1, CURRENT_DATE, 'Present'),
+(2, CURRENT_DATE, 'Present'),
+(3, CURRENT_DATE, 'WFH'),
+(4, CURRENT_DATE, 'Late'),
+(5, CURRENT_DATE, 'Leave'),
+(1, DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY), 'Present'),
+(2, DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY), 'Present'),
+(3, DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY), 'Present'),
+(4, DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY), 'WFH'),
+(5, DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY), 'Leave');
