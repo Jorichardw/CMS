@@ -1,4 +1,4 @@
-# CMS Portal — Mini Project
+# CMS PORTAL — Mini Project
 
 A clean, modular **Company Management System** portal built as a GitHub-ready mini project.
 
