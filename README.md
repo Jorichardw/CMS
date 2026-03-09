@@ -7,46 +7,46 @@ A clean, modular **Company Management System** portal built as a GitHub-ready mi
 ```
 cms-portal-mini-project/
 │
-├── frontend/                   # Static HTML/CSS/JS front-end
-│   ├── index.html              # Dashboard
-│   ├── employees.html          # Employee & Payroll
-│   ├── attendance.html         # Attendance & Leave
-│   ├── tasks.html              # Kanban Task Board
-│   ├── analytics.html          # Analytics & Reports
+├── frontend/                 
+│   ├── index.html              
+│   ├── employees.html          
+│   ├── attendance.html         
+│   ├── tasks.html              
+│   ├── analytics.html         
 │   │
 │   ├── css/
-│   │   └── styles.css          # Global extracted styles
+│   │   └── styles.css         
 │   │
 │   └── js/
-│       ├── api.js              # Centralised fetch API client
-│       ├── auth.js             # Sidebar toggle + session utils
-│       ├── employees.js        # Employee table, filter, pagination
-│       ├── attendance.js       # Leave requests, approve/reject
-│       ├── tasks.js            # Kanban board + drag-and-drop
-│       └── analytics.js        # Report generator, chart stubs
+│       ├── api.js              
+│       ├── auth.js            
+│       ├── employees.js       
+│       ├── attendance.js       
+│       ├── tasks.js           
+│       └── analytics.js        
 │
-├── backend/                    # Node.js + Express REST API
-│   ├── server.js               # Entry point
-│   ├── routes/                 # Route definitions
+├── backend/                    
+│   ├── server.js               
+│   ├── routes/                 
 │   │   ├── auth.js
 │   │   ├── employees.js
 │   │   ├── attendance.js
 │   │   ├── tasks.js
 │   │   └── analytics.js
-│   ├── controllers/            # Business logic
+│   ├── controllers/            
 │   │   ├── authController.js
 │   │   ├── employeesController.js
 │   │   ├── attendanceController.js
 │   │   ├── tasksController.js
 │   │   └── analyticsController.js
 │   ├── middleware/
-│   │   ├── auth.js             # JWT protect middleware
-│   │   └── errorHandler.js     # 404 + global error handler
+│   │   ├── auth.js             
+│   │   └── errorHandler.js   
 │   └── db/
-│       └── connection.js       # MySQL2 connection pool
+│       └── connection.js       
 │
 ├── database/
-│   └── schema.sql              # Full MySQL schema + seed data
+│   └── schema.sql             
 │
 ├── package.json
 └── README.md
