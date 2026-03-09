@@ -1,5 +1,5 @@
 /**
- * tasks.js — CMS Portal Task Board (Kanban) Module
+ * tasks.js — CMS PORTAL - Mini Project Task Board (Kanban) Module
  *
  * Handles:
  *  - Rendering task cards into Kanban columns

@@ -1,5 +1,5 @@
 /**
- * auth.js — CMS Portal Authentication & Sidebar Utilities
+ * auth.js — CMS PORTAL - Mini Project Authentication & Sidebar Utilities
  *
  * Handles:
  *  - Sidebar toggle (mobile hamburger menu)

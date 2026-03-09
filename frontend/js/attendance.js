@@ -1,5 +1,5 @@
 /**
- * attendance.js — CMS Portal Attendance & Leave Module
+ * attendance.js — CMS PORTAL - Mini Project Attendance & Leave Module
  *
  * Handles:
  *  - Rendering pending leave request rows

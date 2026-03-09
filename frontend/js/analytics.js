@@ -1,5 +1,5 @@
 /**
- * analytics.js — CMS Portal Analytics & Reports Module
+ * analytics.js — CMS PORTAL - Mini Project Analytics & Reports Module
  *
  * Handles:
  *  - Custom Report Generator form submission

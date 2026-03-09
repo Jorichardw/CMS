@@ -1,5 +1,5 @@
 /**
- * server.js — CMS Portal Express Backend
+ * server.js — CMS PORTAL - Mini Project Express Backend
  *
  * Entry point. Starts the HTTP server, connects to MySQL,
  * and mounts all route modules.

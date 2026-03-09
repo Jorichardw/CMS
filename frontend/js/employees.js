@@ -1,5 +1,5 @@
 /**
- * employees.js — CMS Portal Employee & Payroll Module
+ * employees.js — CMS PORTAL - Mini Project Employee & Payroll Module
  *
  * Handles:
  *  - Rendering the employee table

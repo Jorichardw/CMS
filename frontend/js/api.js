@@ -1,5 +1,5 @@
 /**
- * api.js — CMS Portal API Client
+ * api.js — CMS PORTAL - Mini Project API Client
  *
  * Centralised fetch wrapper for all backend API calls.
  * Base URL should point to the Express server (backend/server.js).

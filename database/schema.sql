@@ -1,5 +1,5 @@
 -- =============================================================================
--- CMS Portal — MySQL Database Schema
+-- CMS PORTAL - Mini Project — MySQL Database Schema
 -- database/schema.sql
 -- Run: mysql -u root -p < database/schema.sql
 -- =============================================================================

@@ -1,11 +1,11 @@
-# CMS Portal — Mini Project
+# CMS PORTAL - Mini Project
 
 A clean, modular **Company Management System** portal built as a GitHub-ready mini project.
 
 ## 📁 Project Structure
 
 ```
-cms-portal-mini-project/
+CMS PORTAL - Mini Project/
 │
 ├── frontend/                   # Static HTML/CSS/JS front-end
 │   ├── index.html              # Dashboard
@@ -140,4 +140,4 @@ CORS_ORIGIN=http://127.0.0.1:5500
 
 ## 📄 License
 
-MIT © CMS Portal Project
+MIT © CMS PORTAL - Mini Project Project
