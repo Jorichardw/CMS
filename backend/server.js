@@ -14,13 +14,13 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 // Routes
-const authRoutes = require('./routes/auth');
-const employeeRoutes = require('./routes/employees');
-const taskRoutes = require('./routes/tasks');
-const attendanceRoutes = require('./routes/attendance');
+const authRoutes = require('./routes/authRoutes');
+const employeeRoutes = require('./routes/employeeRoutes');
+const taskRoutes = require('./routes/taskRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
 
 // Load routes
-app.use('/api/auth', authRoutes);
+app.use('/api', authRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/attendance', attendanceRoutes);

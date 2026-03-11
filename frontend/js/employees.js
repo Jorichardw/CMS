@@ -176,7 +176,35 @@ function handleExportCSV() {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const token = sessionStorage.getItem('cms_token') || localStorage.getItem('token') || '';
+        const response = await fetch('http://localhost:5000/api/employees', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            // Map DB fields to UI fields
+            allEmployees = data.map(emp => ({
+                id: emp.employee_id,
+                name: emp.name,
+                avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAlfxR8DcH7Va0wy6YmuUkjRm6Z1vfMAaajOKQX_PP48uR6uM3rbDzIC8fTWwWIpWw34LFK8HkCOsJnqGh4rO4fipHRcpe_7x7q68muopeApVl_dz23dX_Agdl3p1VArqeKxZvJXGTLJf4FDbHV1_yFoOhgx5RKecRKWWLNuaF0eqXpI3v3CVL8TOpKHS1risYgGUW3oq26fnlsMR2DXY-1am2GlRZOl2yWtfh3pew__Y32trOB76rlma3d6N9UiATq1BBcgea2a54',
+                department: emp.department,
+                status: emp.status === 'active' ? 'Active' : emp.status === 'on_leave' ? 'On Leave' : 'Inactive',
+                salary: parseFloat(emp.salary),
+                payrollStatus: 'Paid',
+            }));
+            filteredEmployees = [...allEmployees];
+        } else {
+            console.error('Failed to fetch employees. Status:', response.status);
+        }
+    } catch (err) {
+        console.error('Error fetching employees:', err);
+    }
+
     renderTable();
 
     document.querySelector('#emp-search')?.addEventListener('input', applyFilters);

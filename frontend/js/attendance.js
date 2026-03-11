@@ -116,7 +116,43 @@ function handleExportReport() {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const token = sessionStorage.getItem('cms_token') || localStorage.getItem('token') || '';
+        const response = await fetch('http://localhost:5000/api/attendance', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            // Map DB fields to UI fields
+            leaveRequests = data.map(record => {
+                let badgeClass = 'bg-slate-50 text-slate-700 border-slate-100';
+                if (record.status === 'Present') badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                if (record.status === 'Leave') badgeClass = 'bg-rose-50 text-rose-700 border-rose-100';
+                if (record.status === 'Late') badgeClass = 'bg-amber-50 text-amber-700 border-amber-100';
+                if (record.status === 'WFH') badgeClass = 'bg-blue-50 text-blue-700 border-blue-100';
+
+                return {
+                    id: record.attendance_id.toString(),
+                    name: record.employee_name,
+                    team: 'Employee',
+                    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCYWlPwAsXa_a_J6vMfDfIPLiypSfWghjjMcaqcO_7vOGKTaTDNJuTz3j5Ibb9HZt109UkSd7JoaI8txVLdxlCT0wM2lFMNGbTLPeA6sTJxgxunHXFS4c-AAZ9zLPvSfqrPE-t9fn2Ms-HLl-GOqgkwnbfdRgzZvyGaC8FkgY4oWct0j_zIxrjhMgiwN1lMTKysCmSO2Ac-6t_pq8JfmqDK_MF72nyReAuvY-vyaJakUwdoVS_ZLX1FntpEuPTj0R5zsiGErnJF6dY',
+                    leaveType: record.status,
+                    leaveClass: badgeClass,
+                    duration: 'Daily Record',
+                    range: new Date(record.date).toLocaleDateString()
+                };
+            });
+        } else {
+            console.error('Failed to fetch attendance. Status:', response.status);
+        }
+    } catch (err) {
+        console.error('Error fetching attendance:', err);
+    }
+
     renderLeaveTable();
 
     document.querySelector('#leave-tbody')?.addEventListener('click', handleLeaveAction);

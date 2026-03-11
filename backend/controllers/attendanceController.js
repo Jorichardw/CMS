@@ -1,44 +1,106 @@
-// controllers/attendanceController.js
-'use strict';
 const db = require('../db/connection');
 
-exports.getRecords = async (req, res, next) => {
-    try {
-        const [rows] = await db.query('SELECT * FROM attendance ORDER BY date DESC LIMIT 100');
-        res.json(rows);
-    } catch (err) { next(err); }
+// GET /api/attendance
+const getAttendance = (req, res) => {
+    const { employee_id, date } = req.query;
+
+    let query = `
+        SELECT a.attendance_id, a.employee_id, e.name as employee_name, a.date, a.status 
+        FROM attendance a
+        JOIN employees e ON a.employee_id = e.employee_id
+    `;
+    let queryParams = [];
+    let conditions = [];
+
+    if (employee_id) {
+        conditions.push('a.employee_id = ?');
+        queryParams.push(employee_id);
+    }
+    if (date) {
+        conditions.push('a.date = ?');
+        queryParams.push(date);
+    }
+
+    if (conditions.length > 0) {
+        query += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    // Order by most recent dates first
+    query += ' ORDER BY a.date DESC';
+
+    db.query(query, queryParams, (err, results) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ message: 'Database error' });
+        }
+        res.json(results);
+    });
 };
 
-exports.getLeaveRequests = async (_req, res, next) => {
-    try {
-        const [rows] = await db.query(
-            "SELECT lr.*, e.name, e.department FROM leave_requests lr JOIN employees e ON lr.employee_id = e.id WHERE lr.status = 'Pending'"
-        );
-        res.json(rows);
-    } catch (err) { next(err); }
+// POST /api/attendance
+const createAttendance = (req, res) => {
+    const { employee_id, date, status } = req.body;
+
+    if (!employee_id || !date || !status) {
+        return res.status(400).json({ message: 'employee_id, date, and status are required' });
+    }
+
+    const validStatuses = ['Present', 'Leave', 'Late', 'WFH'];
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status. Must be one of: Present, Leave, Late, WFH' });
+    }
+
+    db.query(
+        'INSERT INTO attendance (employee_id, date, status) VALUES (?, ?, ?)',
+        [employee_id, date, status],
+        (err, results) => {
+            if (err) {
+                console.error('Database error:', err);
+                if (err.code === 'ER_DUP_ENTRY') {
+                    return res.status(409).json({ message: 'Attendance record for this employee and date already exists' });
+                }
+                if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+                    return res.status(404).json({ message: 'Employee not found' });
+                }
+                return res.status(500).json({ message: 'Database error' });
+            }
+            res.status(201).json({ message: 'Attendance record created successfully', attendanceId: results.insertId });
+        }
+    );
 };
 
-exports.approveLeave = async (req, res, next) => {
-    try {
-        await db.query("UPDATE leave_requests SET status='Approved' WHERE id=?", [req.params.id]);
-        res.json({ message: 'Leave approved' });
-    } catch (err) { next(err); }
+// PUT /api/attendance/:id
+const updateAttendance = (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+        return res.status(400).json({ message: 'status is required' });
+    }
+
+    const validStatuses = ['Present', 'Leave', 'Late', 'WFH'];
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status. Must be one of: Present, Leave, Late, WFH' });
+    }
+
+    db.query(
+        'UPDATE attendance SET status = ? WHERE attendance_id = ?',
+        [status, id],
+        (err, results) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ message: 'Database error' });
+            }
+            if (results.affectedRows === 0) {
+                return res.status(404).json({ message: 'Attendance record not found' });
+            }
+            res.json({ message: 'Attendance record updated successfully' });
+        }
+    );
 };
 
-exports.rejectLeave = async (req, res, next) => {
-    try {
-        await db.query("UPDATE leave_requests SET status='Rejected' WHERE id=?", [req.params.id]);
-        res.json({ message: 'Leave rejected' });
-    } catch (err) { next(err); }
-};
-
-exports.exportReport = async (_req, res, next) => {
-    try {
-        const [rows] = await db.query('SELECT e.name, a.date, a.status, a.check_in, a.check_out FROM attendance a JOIN employees e ON a.employee_id = e.id ORDER BY a.date DESC');
-        const header = 'Name,Date,Status,Check-In,Check-Out';
-        const lines = rows.map(r => `${r.name},${r.date},${r.status},${r.check_in},${r.check_out}`);
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename="attendance_report.csv"');
-        res.send([header, ...lines].join('\n'));
-    } catch (err) { next(err); }
+module.exports = {
+    getAttendance,
+    createAttendance,
+    updateAttendance
 };

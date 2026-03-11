@@ -174,7 +174,50 @@ function renderBoard() {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const token = sessionStorage.getItem('cms_token') || localStorage.getItem('token') || '';
+        const response = await fetch('http://localhost:5000/api/tasks', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            // Map DB fields to UI fields
+            tasks = data.map(t => {
+                let statusMap = t.status;
+                if (t.status === 'in_progress') statusMap = 'in-progress';
+                if (t.status === 'done') statusMap = 'completed';
+
+                let priorityClass = 'bg-slate-100 text-slate-600';
+                if (t.priority === 'high') priorityClass = 'bg-rose-50 text-rose-700 border-rose-100';
+                if (t.priority === 'medium') priorityClass = 'bg-amber-50 text-amber-700';
+
+                return {
+                    id: t.task_id.toString(),
+                    status: statusMap,
+                    category: 'Task', 
+                    categoryClass: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+                    priority: t.priority.charAt(0).toUpperCase() + t.priority.slice(1),
+                    priorityClass: priorityClass,
+                    title: t.title,
+                    dueLabel: t.deadline ? `Due: ${new Date(t.deadline).toLocaleDateString()}` : 'No deadline',
+                    dueIcon: true,
+                    progress: 50,
+                    reviewLabel: 'Ready for Review',
+                    completedLabel: 'Completed',
+                    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDwxbV2kKu56lH9G67wsOTXe1K867tEJxavBvU0375_YBMbH_wIj8mjb3zbO0UKwM6wzl-tlCt5JZqi3fAbTKJI5iAVfZm9IRXflmCAmtWK843uWCx-YasRwvSjqvn0Z3VDozr4v00xQSaOIZXrQ-2zxTFw5KHKuYe1a_5qqNTLme0cQzjJT0KplOaNOmpkBRA4x1t7WSwKnNlcLJcrIE1Fa9uvtWk5ar1DYug-QCmGqSmk6RUGk8Et7rZ8RV5MpWLMTgFucxB9ZgI'
+                };
+            });
+        } else {
+            console.error('Failed to fetch tasks. Status:', response.status);
+        }
+    } catch (err) {
+        console.error('Error fetching tasks:', err);
+    }
+
     renderBoard();
     setupDragAndDrop();
 
