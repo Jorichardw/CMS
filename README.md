@@ -132,4 +132,4 @@ CORS_ORIGIN=http://127.0.0.1:5500
 | Dev Server | Nodemon |
 
 📄 License
-MIT © CMS PORTAL - Mini Project Project
+MIT © CMS PORTAL - Mini Project
