@@ -1,5 +1,5 @@
 {
-    "name": "cms-portal-mini-project",
+    "name": "CMS PORTAL - Mini Project",
     "version": "1.0.0",
     "description": "CMS PORTAL - Mini Project Express backend API",
     "main": "backend/server.js",

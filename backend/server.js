@@ -1,68 +1,31 @@
-/**
- * server.js — CMS PORTAL - Mini Project Express Backend
- *
- * Entry point. Starts the HTTP server, connects to MySQL,
- * and mounts all route modules.
- *
- * Usage:
- *   npm install
- *   npm run dev    (nodemon)
- *   npm start      (production)
- */
-
-'use strict';
-
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const path = require('path');
-
-const authRoutes = require('./routes/auth');
-const employeeRoutes = require('./routes/employees');
-const attendanceRoutes = require('./routes/attendance');
-const taskRoutes = require('./routes/tasks');
-const analyticsRoutes = require('./routes/analytics');
-
-const { notFound, errorHandler } = require('./middleware/errorHandler');
-
-// ── App Setup ─────────────────────────────────────────────────────────────────
+const bodyParser = require('body-parser');
+const db = require('./db/connection'); // Database connection
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
-// ── Global Middleware ─────────────────────────────────────────────────────────
+// Middleware
+app.use(cors());
 
-app.use(helmet());                                    // Security headers
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
+// Parses JSON requests
+app.use(bodyParser.json());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(morgan('dev'));
 
-// ── Static Frontend (optional — for direct deployment) ────────────────────────
+// Routes
+const authRoutes = require('./routes/auth');
+const employeeRoutes = require('./routes/employees');
+const taskRoutes = require('./routes/tasks');
+const attendanceRoutes = require('./routes/attendance');
 
-app.use(express.static(path.join(__dirname, '../frontend')));
-
-// ── API Routes ────────────────────────────────────────────────────────────────
-
+// Load routes
 app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
-app.use('/api/attendance', attendanceRoutes);
 app.use('/api/tasks', taskRoutes);
-app.use('/api/analytics', analyticsRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
-// Health check
-app.get('/api/health', (_req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
-
-// ── Error Handling ────────────────────────────────────────────────────────────
-
-app.use(notFound);
-app.use(errorHandler);
-
-// ── Start Server ──────────────────────────────────────────────────────────────
-
+// Start server
 app.listen(PORT, () => {
-    console.log(`[CMS] Server running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
-
-module.exports = app;

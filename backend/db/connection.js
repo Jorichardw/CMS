@@ -1,16 +1,18 @@
-// db/connection.js — MySQL2 connection pool
-'use strict';
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 3306,
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'cms_portal',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root', // update with your user
+  password: '', // update with your password
+  database: 'cms_portal' // update with your db name
 });
 
-module.exports = pool;
+connection.connect((err) => {
+  if (err) {
+    console.error('Error connecting to MySQL database:', err);
+    return;
+  }
+  console.log('Successfully connected to MySQL database.');
+});
+
+module.exports = connection;
