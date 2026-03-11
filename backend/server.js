@@ -12,7 +12,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_key_here';
 const PORT = process.env.PORT || 5000;
 
 // Database Connection
-const pool = mysql.createPool({ host: 'localhost', user: 'root', password: 'root', database: 'cms_portal' });
+const dbConfig = process.env.DATABASE_URL || { host: 'localhost', user: 'root', password: 'root', database: 'cms_portal' };
+const pool = mysql.createPool(dbConfig);
 
 // Auth Middleware
 const auth = (req, res, next) => {
@@ -158,4 +159,8 @@ app.get('/api/attendance/export', wrap(async (req, res) => {
     );
 }));
 
-app.listen(PORT, () => console.log('Server running on port ' + PORT));
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => console.log('Server running on port ' + PORT));
+}
+
+module.exports = app;
